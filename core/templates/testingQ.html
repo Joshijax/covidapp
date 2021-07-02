@@ -1,0 +1,132 @@
+{% extends 'layouts/base.html' %}
+{% load humanize %}
+{% load static %}
+
+
+{% block title %} Home {% endblock title %}
+
+<!-- Specific CSS goes HERE -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+	<link rel="stylesheet" type="text/css" href="{% static '/assets/css/css.css' %}">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<div class="container">
+    <div class="row"><br><br>
+    <a id="testerer">try</a>
+        {% for q in questions %}
+        <div class="col-sm-12">
+            <div style="width: 50%; margin: auto;" class="mt-4 keyid" id="quiz{{forloop.counter}}">
+
+                <div id="quiz">
+                  
+                    <div class="question">
+                        <h3><span class="label label-warning" id="qid">{{ forloop.counter }}</span>
+                            <span id="question">{{q.question}}</span>
+                        </h3>
+                    </div>
+                    <ul>
+                        <li class="lister">
+                            <input type="radio" id="f-option{{ forloop.counter }}" name="selector{{ forloop.counter }}" value="1">
+                            <label for="f-option{{ forloop.counter }}" class="element-animation{{ forloop.counter }}">Yes</label>
+                            <div class="check"></div>
+                        </li>
+                          
+                        <li class="lister">
+                            <input type="radio" id="s-option{{ forloop.counter }}" name="selector{{ forloop.counter }}" value="2">
+                            <label for="s-option{{ forloop.counter }}" class="element-animation{{ forloop.counter }}">No</label>
+                            <div class="check"><div class="inside"></div></div>
+                        </li>  
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <br>
+        <div class="col-sm-12">
+            <div style="width: 50%; margin: auto;" class="mt-4 mb-4" >
+
+                <button id="takeTest" type="button" class="btn btn-warning">Run test</button>
+                <div id ="my_loadtest" style="display: none;">
+                <i  style=" z-index: 5; color: black;" class="fa fa-spinner fa-spin fa-2x fa-fw margin-bottom"></i>Running test
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% include 'includes/sucess.html' %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+
+
+            $(document).on('click', '#takeTest', function(e){
+              e.preventDefault();
+              
+              {% for q in questions %}
+              if($('#f-option{{ forloop.counter }}').is(':checked'))
+               { 
+                   var q{{ forloop.counter }}= {{q.points}}
+               }
+               else if($('#s-option{{ forloop.counter }}').is(':checked')){
+                   var q{{ forloop.counter }}= 0
+               }
+               else{
+                   
+                   alert("Question {{ forloop.counter }} is not checked");
+                   $('html, body').animate({
+                        scrollTop: $("#quiz{{forloop.counter}}").offset().top
+                    }, 2000);
+                   return;
+               }
+            {% endfor %}
+            $('#takeTest').hide();
+              $('#my_loadtest').show();
+            console.log(0{% for q in questions %}+q{{ forloop.counter }}{% endfor %});
+            var result = 0{% for q in questions %}+q{{ forloop.counter }}{% endfor %};
+              {% comment %} $('#submitBMI').hide();
+              $('#my_loadBMI').show();
+              console.log($('#widthBMI').val()); {% endcomment %}
+              setTimeout(
+                  function(){
+                    $('#my_loadtest').hide();
+                    $('#takeTest').show();
+                    if(result > 60){
+                        $('#result1').text("Probablity of you have covid is "+result+"%");
+                        $("#modal-header").css("background-color","red");
+                    } else{
+                        $('#result1').text("Probablity of you have covid is "+result+"%."+" Please see a doctorr");
+                    }
+                    
+                    $('#myModal').modal('show');
+                }, 7000);
+            });
+
+        $(document).on('click', '#testerer', function(e){
+              e.preventDefault();
+              $('#myModal').modal('show');
+
+         });
+
+
+        </script>
+{% endblock content %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}
+<script>
+$('.nav-item a').removeClass('active');
+$('.home-item a').addClass('active');
+</script>
+
+<!-- Sortable Tables -->
+<script defer src="/static/assets/js/sorttable.js"></script>
+
+<!-- Plotly.js CDN -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.54.6/plotly.min.js"></script>
+
+<!-- Load and display data -->
+<script defer src="/static/assets/js/fetch-data.js"></script>
+{% endblock javascripts %}
